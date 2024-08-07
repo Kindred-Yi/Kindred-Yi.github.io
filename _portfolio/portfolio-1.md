@@ -1,6 +1,6 @@
 ---
 title: "Portfolio"
-excerpt: "Short description of portfolio item number 1<br/><img src='/images/500x300.png'>"
+excerpt: "You can find my portfolio on my [github page](https://github.com/Kindred-Yi)"
 collection: portfolio
 ---
 
