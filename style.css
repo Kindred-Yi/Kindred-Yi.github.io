@@ -1,0 +1,59 @@
+/* 通用样式（所有页面） */
+body {
+    font-family: Georgia, serif;
+    margin: 20px;
+    background-color: #f4f4f4;
+}
+
+nav {
+    background-color: #ddd;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+nav a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+h1 {
+    color: #333;
+}
+
+img {
+    margin: 15px 0;
+    border-radius: 8px;
+}
+
+ul {
+    list-style-type: square;
+}
+
+em {
+    color: #555;
+}
+
+strong {
+    font-size: 1.1em;
+}
+
+/* 针对faye.html单独设计的布局样式（独特布局）*/
+.faye-layout {
+    background-color: #e0f7fa;
+    padding: 30px;
+}
+
+.faye-layout h1 {
+    text-align: center;
+    font-size: 2em;
+}
+
+.faye-layout img {
+    display: block;
+    margin: 0 auto;
+}
+
+.faye-layout p {
+    line-height: 1.6;
+}
