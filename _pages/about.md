@@ -13,3 +13,39 @@ I am passionate about robotics, especially human-robot interaction and machine l
 
 You can find my CV [here](../assets/Kindred_CV.pdf).
 You can find my github page [here](https://github.com/Kindred-Yi).
+
+## Projects
+
+<div style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 20px; margin-bottom: 40px; border-bottom: 1px solid #e0e0e0; padding-bottom: 20px;">
+  
+  <div style="flex: 1; min-width: 300px;">
+    <video autoplay loop muted playsinline width="100%" style="border-radius: 6px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+      <source src="/assets/videos/teleop_demo.mp4" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
+  </div>
+
+  <div style="flex: 1.5; min-width: 300px;">
+    <h3 style="margin-top: 0; font-size: 1.1em;">
+      <a href="#" style="text-decoration: none; color: inherit;">Intent-Driven Bimanual Teleoperation with Real-time Coordination Analysis</a>
+    </h3>
+
+    <p style="font-size: 0.9em; color: #555; margin-bottom: 5px;">
+      <strong>Yi [Your Last Name]</strong>, [Co-author Name], Bilge Mutlu
+    </p>
+
+    <p style="font-size: 0.85em; color: #d9534f; margin-bottom: 10px; font-style: italic;">
+      Manuscript in preparation
+    </p>
+
+    <p style="font-size: 0.95em; line-height: 1.5;">
+      We present a novel VR-based teleoperation system designed for dual-arm robots with multi-finger grippers. The system utilizes an <strong>Attention-LSTM network</strong> to recognize user intent and bimanual coordination modes in real-time. This allows for adaptive shared control, enhancing manipulation precision while reducing operator cognitive load during complex tasks.
+    </p>
+
+    <p style="font-size: 0.9em;">
+      <a href="https://github.com/Kindred-Yi" style="text-decoration: none;">[Code]</a> &nbsp;
+      <a href="#" style="text-decoration: none;">[Video]</a>
+    </p>
+  </div>
+
+</div>
