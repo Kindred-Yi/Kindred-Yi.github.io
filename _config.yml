@@ -8,7 +8,7 @@
 
 # Basic Site Settings
 locale                   : "en-US"
-title                    : "Yongzhe Yi"
+title                    : "Yongzhe(Kindred) Yi"
 title_separator          : "-"
 name                     : &name "Your Name"
 description              : &description "personal description"
@@ -22,7 +22,7 @@ repository               : "academicpages/academicpages.github.io"
 author:
   # Biographic information
   avatar           : "avatar.png"
-  name             : "Yongzhe Yi"
+  name             : "Yongzhe(Kindred) Yi"
   pronouns         : # example: "she/her"  
   bio              : "CS@WISC"
   location         : #"Earth"
