@@ -27,11 +27,11 @@ You can find my github page [here](https://github.com/Kindred-Yi).
 
   <div style="flex: 1.5; min-width: 300px;">
     <h3 style="margin-top: 0; font-size: 1.1em;">
-      <a href="#" style="text-decoration: none; color: inherit;">Intent-Driven Bimanual Teleoperation with Real-time Coordination Analysis</a>
+      <a href="#" style="text-decoration: none; color: inherit;">Intent-Driven Bimanual Dexterous Teleoperation with Adaptive Shared Control</a>
     </h3>
 
     <p style="font-size: 0.9em; color: #555; margin-bottom: 5px;">
-      <strong>Yi [Your Last Name]</strong>, [Co-author Name], Bilge Mutlu
+      <strong>Yongzhe(Kindred) Yi</strong>, Mike Hagenow, Bilge Mutlu
     </p>
 
     <p style="font-size: 0.85em; color: #d9534f; margin-bottom: 10px; font-style: italic;">
@@ -39,7 +39,7 @@ You can find my github page [here](https://github.com/Kindred-Yi).
     </p>
 
     <p style="font-size: 0.95em; line-height: 1.5;">
-      We present a novel VR-based teleoperation system designed for dual-arm robots with multi-finger grippers. The system utilizes an <strong>Attention-LSTM network</strong> to recognize user intent and bimanual coordination modes in real-time. This allows for adaptive shared control, enhancing manipulation precision while reducing operator cognitive load during complex tasks.
+      We propose a novel teleoperation framework designed to reduce the cognitive load of controlling dual-arm robots equipped with dexterous hands. We built a Recurrent Neural Network that performs real-time classification of user intent on two levels: bimanual coordination modes (e.g., symmetric vs. decoupled motion) and dexterous manipulation types (e.g., precision vs. power grasp). These inferred intentions drive an adaptive shared controller that dynamically adjusts joint constraints, enabling precise and fluid dexterous manipulation in VR.
     </p>
 
     <p style="font-size: 0.9em;">
