@@ -30,6 +30,7 @@ You can find my github page [here](https://github.com/Kindred-Yi).
       <a href="#" style="text-decoration: none; color: inherit;">Intent-Driven Bimanual Dexterous Teleoperation with Adaptive Shared Control</a>
     </h3>
 
+    <!--
     <p style="font-size: 0.9em; color: #555; margin-bottom: 5px;">
       <strong>Yongzhe(Kindred) Yi</strong>, Mike Hagenow, Bilge Mutlu
     </p>
@@ -37,6 +38,7 @@ You can find my github page [here](https://github.com/Kindred-Yi).
     <p style="font-size: 0.85em; color: #d9534f; margin-bottom: 10px; font-style: italic;">
       Under review
     </p>
+    -->
 
 
     <p style="font-size: 0.9em;">
