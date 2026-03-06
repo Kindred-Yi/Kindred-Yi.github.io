@@ -35,16 +35,13 @@ You can find my github page [here](https://github.com/Kindred-Yi).
     </p>
 
     <p style="font-size: 0.85em; color: #d9534f; margin-bottom: 10px; font-style: italic;">
-      Manuscript in preparation
+      Under review
     </p>
 
-    <p style="font-size: 0.95em; line-height: 1.5;">
-      We propose a novel teleoperation framework designed to reduce the cognitive load of controlling dual-arm robots equipped with dexterous hands. We built a Recurrent Neural Network that performs real-time classification of user intent on two levels: bimanual coordination modes (e.g., symmetric vs. decoupled motion) and dexterous manipulation types (e.g., precision vs. power grasp). These inferred intentions drive an adaptive shared controller that dynamically adjusts joint constraints, enabling precise and fluid dexterous manipulation in VR.
-    </p>
 
     <p style="font-size: 0.9em;">
-      <a href="https://github.com/Kindred-Yi" style="text-decoration: none;">[Code]</a> &nbsp;
-      <a href="#" style="text-decoration: none;">[Video]</a>
+      <a href="[[https://github.com/Kindred-Yi](https://github.com/Kindred-Yi/Open-Teach)](https://drive.google.com/file/d/1BHr3pAwbar2VXCntza5VgEBf8uUUUUK4/view?usp=sharing)" style="text-decoration: none;">[Paper]</a> &nbsp;
+      <a href="[https://github.com/Kindred-Yi/Open-Teach](https://github.com/Kindred-Yi/Open-Teach)" style="text-decoration: none;">[Code]</a>
     </p>
   </div>
 
