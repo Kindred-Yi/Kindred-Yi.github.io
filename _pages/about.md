@@ -14,8 +14,10 @@ I am passionate about robotics, especially human-robot interaction and machine l
 You can find my CV [here](../assets/Kindred_CV.pdf).
 You can find my github page [here](https://github.com/Kindred-Yi).
 
+<div style="width:300px; margin:auto; margin-top:40px;">
 <script type="text/javascript" id="mapmyvisitors"
 src="//mapmyvisitors.com/map.js?d=你的ID&cl=ffffff&w=a"></script>
+</div>
 
 ## Projects
 
