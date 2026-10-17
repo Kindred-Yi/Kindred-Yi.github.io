@@ -1,0 +1,32 @@
+[
+  {
+    "title": "Coordination-Aware Shared Control for Bimanual Dexterous Teleoperation",
+    "authors": ["Yongzhe (Kindred) Yi", "Callie Kim", "Mike Hagenow", "Bilge Mutlu"],
+    "status": "In submission · ICRA 2027",
+    "presentation": "Poster · IROS Workshop: Toward Human-Level Robotic Teammates, 2026",
+    "summary": "A coordination-aware shared control framework that recognizes bimanual coordination patterns and adapts robot assistance during dexterous teleoperation. A 16-participant user study showed reduced operator workload.",
+    "video": "/assets/videos/teleop_demo.mp4",
+    "links": {
+      "Paper": "https://drive.google.com/file/d/1BHr3pAwbar2VXCntza5VgEBf8uUUUUK4/view?usp=sharing",
+      "Code": "https://github.com/Kindred-Yi/Open-Teach",
+      "Video": "https://drive.google.com/file/d/17tvU1Fy-yAENzZIUd1KruCJFLEQvU-3d/view?usp=sharing",
+      "Poster": "https://ontoagenticai26.info/proceedings.html"
+    }
+  },
+  {
+    "title": "Measuring and Steering Motion Legibility in Generalist Robot Policies",
+    "authors": ["Yongzhe (Kindred) Yi", "Mike Hagenow", "Bilge Mutlu"],
+    "status": "In submission · IEEE Robotics and Automation Letters (RA-L)",
+    "summary": "Measuring and steering motion legibility in vision-language-action policies, using classifier-free guidance to generate more legible behaviors while preserving task success.",
+    "links": {
+      "Manuscript": "https://drive.google.com/file/d/1DG6l1MWJ3LXOsKz3rTlroHFMshq-DsQF/view?usp=sharing"
+    }
+  },
+  {
+    "title": "Beyond Task Success: User Interactions with and Perceptions of Hierarchical VLA-Driven Robots",
+    "authors": ["Xinning He", "Callie Kim", "Yongzhe (Kindred) Yi", "Dakota Sullivan", "Mike Hagenow", "Bilge Mutlu"],
+    "status": "In submission · ACM/IEEE International Conference on Human-Robot Interaction (HRI), 2027",
+    "summary": "Studying user interactions with and perceptions of robots driven by hierarchical vision-language-action policies.",
+    "links": {}
+  }
+]

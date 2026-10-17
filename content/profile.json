@@ -1,0 +1,24 @@
+{
+  "name": "Yongzhe (Kindred) Yi",
+  "shortName": "Kindred Yi",
+  "title": "Researcher",
+  "affiliation": "MIT CSAIL",
+  "affiliationUrl": "https://www.csail.mit.edu/",
+  "photo": "/images/yyzava.png",
+  "siteUrl": "https://kindred-yi.github.io",
+  "description": "Yongzhe (Kindred) Yi — human–robot interaction and robot learning at MIT CSAIL.",
+  "currentAdvisor": { "name": "Andreea Bobu", "url": "https://www.mit.edu/~abobu/" },
+  "undergraduateAdvisors": [
+    { "name": "Bilge Mutlu", "url": "https://bmutlu.github.io/" },
+    { "name": "Mike Hagenow", "url": "https://www.hageneaux.com/" }
+  ],
+  "researchInterests": "My research interests lie at the intersection of human–robot interaction (HRI) and robot learning. I want to build robots that understand people and align their behavior with human intent and preferences. My work spans shared control, dexterous teleoperation, and learning legible robot behavior.",
+  "links": {
+    "cv": "/assets/Kindred_CV.pdf",
+    "scholar": "https://scholar.google.com/citations?user=5zqN3c8AAAAJ&hl=en",
+    "linkedin": "https://www.linkedin.com/in/kindred-yi-46009a288/",
+    "email": "mailto:yyi49@wisc.edu",
+    "twitter": "https://x.com/kindredyyz",
+    "github": "https://github.com/Kindred-Yi"
+  }
+}
