@@ -6,9 +6,12 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'dist');
 const read = name => readFile(path.join(root, name), 'utf8');
 const json = async name => JSON.parse(await read(`content/${name}.json`));
-const [profile, publications, posts, layout, home] = await Promise.all([
+const [profile, publications, posts, layout, home, about] = await Promise.all([
   json('profile'), json('publications'), json('posts'),
-  read('templates/layout.html'), read('templates/home.html')
+  read('templates/layout.html'), read('templates/home.html'),
+  // Prose with inline links lives in content/*.html, same as blog post bodies,
+  // because a JSON string cannot be wrapped across lines.
+  read('content/about.html')
 ]);
 const escape = value => String(value).replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -28,10 +31,6 @@ function safeUrl(value) {
 function link(label, url) {
   return url ? `<a href="${safeUrl(url)}">${escape(label)}</a>` : escape(label);
 }
-function joinedPeople(people) {
-  const names = people.map(person => link(person.name, person.url));
-  return names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
-}
 
 // Inline icons avoid font packages, CDNs, and third-party requests.
 const paths = {
@@ -50,26 +49,26 @@ const socialLinks = Object.entries(labels).map(([key, label]) => {
     : `<span class="social-link is-pending" role="img" aria-label="${label} — link coming soon" title="${label} — link coming soon">${icon}</span>`;
 }).join('\n');
 const publicationHtml = publications.map(paper => `<article class="publication">
-  ${paper.video ? `<figure class="publication-media"><video controls playsinline preload="metadata" aria-label="Demonstration: ${escape(paper.title)}"><source src="${safeUrl(paper.video)}" type="video/mp4"><a href="${safeUrl(paper.video)}">Download demonstration video</a></video><figcaption>Bimanual dexterous teleoperation · Research demonstration</figcaption></figure>` : ''}
-  <h3>${link(paper.title, paper.links?.Paper || paper.links?.Website)}</h3>
-  <p class="authors">${paper.authors.map(name => name === profile.name ? `<strong>${escape(name)}</strong>` : escape(name)).join(', ')}</p>
-  <p class="publication-status">${escape(paper.status)}</p>
-  ${paper.presentation ? `<p class="publication-presentation">${escape(paper.presentation)}</p>` : ''}
-  <p class="publication-summary">${escape(paper.summary)}</p>
-  <div class="paper-links">${Object.entries(paper.links || {}).filter(([, url]) => url).map(([label, url]) => link(`${label} ↗`, url)).join('')}</div>
+  ${paper.video ? `<div class="publication-media"><video autoplay loop muted playsinline disablepictureinpicture tabindex="-1" aria-label="Demonstration: ${escape(paper.title)}"><source src="${safeUrl(paper.video)}" type="video/mp4"><a href="${safeUrl(paper.video)}">Download demonstration video</a></video></div>` : ''}
+  <div class="publication-body">
+    <h3>${link(paper.title, paper.links?.Paper || paper.links?.Website)}</h3>
+    <p class="authors">${paper.authors.map(name => name === profile.name ? `<strong>${escape(name)}</strong>` : escape(name)).join(', ')}</p>
+    <p class="publication-venue">${escape(paper.venue)}</p>
+    <div class="paper-links">${Object.entries(paper.links || {}).filter(([, url]) => url).map(([label, url]) => `[${link(label, url)}]`).join(' ')}</div>
+    <p class="publication-summary">${escape(paper.summary)}</p>
+  </div>
 </article>`).join('\n');
 const page = ({ title, description = profile.description, pathname, content, section, article = false }) => template(layout, {
   title: escape(title), description: escape(description),
   canonical: escape(new URL(pathname, profile.siteUrl).href), imageUrl: escape(new URL(profile.photo, profile.siteUrl).href),
-  shortName: escape(profile.shortName), name: escape(profile.name), year: new Date().getUTCFullYear(),
+  name: escape(profile.name), year: new Date().getUTCFullYear(),
   ogType: article ? 'article' : 'website', aboutCurrent: section === 'home' ? ' aria-current="page"' : '',
   blogCurrent: section === 'blog' ? ' aria-current="page"' : '', content
 });
 const homeContent = template(home, {
   name: escape(profile.name), role: escape(profile.title), affiliation: escape(profile.affiliation), affiliationUrl: safeUrl(profile.affiliationUrl),
-  photo: safeUrl(profile.photo), currentAdvisor: link(profile.currentAdvisor.name, profile.currentAdvisor.url),
-  undergraduateAdvisors: joinedPeople(profile.undergraduateAdvisors), researchInterests: escape(profile.researchInterests),
-  socialLinks, publications: publicationHtml, email: safeUrl(profile.links.email), emailText: escape(profile.links.email.replace(/^mailto:/, ''))
+  photo: safeUrl(profile.photo), about, socialLinks, publications: publicationHtml,
+  email: safeUrl(profile.links.email), emailText: escape(profile.links.email.replace(/^mailto:/, ''))
 });
 
 // Prepare all pages before replacing the previous build: a bad post preserves it.
@@ -84,23 +83,27 @@ for (const post of published) {
   slugs.add(post.slug);
   const body = await read(`content/posts/${post.slug}.html`);
   const content = `<article class="writing-page"><a class="back-link" href="/blog/">← All writing</a><p class="eyebrow">Blog</p><h1 class="page-title">${escape(post.title)}</h1><p class="post-meta"><time datetime="${post.date}">${formatDate(post.date)}</time> · ${escape(profile.name)}</p><div class="prose">${body}</div></article>`;
-  pages.set(`blog/${post.slug}/index.html`, page({ title: `${post.title} · ${profile.shortName}`, description: post.description, pathname: `/blog/${post.slug}/`, content, section: 'blog', article: true }));
+  pages.set(`blog/${post.slug}/index.html`, page({ title: `${post.title} · ${profile.name}`, description: post.description, pathname: `/blog/${post.slug}/`, content, section: 'blog', article: true }));
 }
 published.sort((a, b) => b.date.localeCompare(a.date));
 const postList = published.length ? published.map(post => `<article class="post-item"><time datetime="${post.date}">${formatDate(post.date)}</time><h2><a href="/blog/${post.slug}/">${escape(post.title)}</a></h2><p>${escape(post.description)}</p><a class="text-link" href="/blog/${post.slug}/">Read post ↗</a></article>`).join('\n') : '<div class="empty-state"><h2>Writing is on its way.</h2><p>A space for research notes, ideas, and things I learn along the way. No posts yet — check back soon.</p></div>';
-pages.set('blog/index.html', page({ title: `Blog · ${profile.shortName}`, pathname: '/blog/', section: 'blog', content: `<div class="writing-page"><p class="eyebrow">Notes &amp; perspectives</p><h1 class="page-title">Blog</h1><p class="page-description">Thoughts on robots, learning, and the people at the center of it all.</p>${postList}<a class="text-link" href="/">← Back to home</a></div>` }));
-pages.set('404.html', page({ title: `Page not found · ${profile.shortName}`, pathname: '/404.html', content: '<div class="writing-page"><p class="eyebrow">404</p><h1 class="page-title">A little off course.</h1><p class="page-description">This page may have moved, or the link may be out of date.</p><a class="text-link" href="/">← Back to home</a></div>' }));
+pages.set('blog/index.html', page({ title: `Blog · ${profile.name}`, pathname: '/blog/', section: 'blog', content: `<div class="writing-page"><p class="eyebrow">Notes &amp; perspectives</p><h1 class="page-title">Blog</h1><p class="page-description">Thoughts on robots, learning, and the people at the center of it all.</p>${postList}<a class="text-link" href="/">← Back to home</a></div>` }));
+pages.set('404.html', page({ title: `Page not found · ${profile.name}`, pathname: '/404.html', content: '<div class="writing-page"><p class="eyebrow">404</p><h1 class="page-title">A little off course.</h1><p class="page-description">This page may have moved, or the link may be out of date.</p><a class="text-link" href="/">← Back to home</a></div>' }));
 for (const [oldPath, destination] of [['publications/index.html', '/#research'], ['about/index.html', '/#about']]) {
-  pages.set(oldPath, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page moved</title><meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${profile.siteUrl}${destination}"></head><body><p><a href="${destination}">Continue to ${profile.shortName}’s home page</a></p></body></html>`);
+  pages.set(oldPath, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page moved</title><meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${profile.siteUrl}${destination}"></head><body><p><a href="${destination}">Continue to ${profile.name}’s home page</a></p></body></html>`);
 }
 // The output is a fixed child of the checkout. Source data stays intact.
 if (path.dirname(output) !== path.resolve(root) || path.basename(output) !== 'dist') throw new Error('Unsafe build output');
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
+// Editing notes in templates and content/*.html are for the author, not for
+// visitors reading the page source. Escaped examples inside posts survive,
+// because those read as &lt;!-- rather than a real comment.
+const stripComments = html => html.replace(/<!--(?!\[if)[\s\S]*?-->/g, '').replace(/^[ \t]+$\n/gm, '');
 for (const [filename, html] of pages) {
   const target = path.join(output, filename);
   await mkdir(path.dirname(target), { recursive: true });
-  await writeFile(target, html);
+  await writeFile(target, stripComments(html));
 }
 await Promise.all(['assets', 'images'].map(dir => cp(path.join(root, dir), path.join(output, dir), { recursive: true })));
 await writeFile(path.join(output, '.nojekyll'), '');

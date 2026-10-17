@@ -16,6 +16,7 @@ const documents = new Map();
 for (const file of files) {
   const html = await readFile(file, 'utf8');
   assert(!/\{\{\w+\}\}/.test(html), `Unresolved template: ${file}`);
+  assert(!html.includes('<!--'), `Author comment leaked into the page source: ${file}`);
   assert(/<title>[^<]+<\/title>/.test(html), `Missing title: ${file}`);
   assert(/name="viewport"/.test(html), `Missing viewport: ${file}`);
   const ids = [...html.matchAll(/\bid="([^"]+)"/g)].map(match => match[1]);
