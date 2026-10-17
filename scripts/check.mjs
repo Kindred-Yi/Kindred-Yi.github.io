@@ -11,6 +11,7 @@ async function walk(dir) {
   return (await Promise.all(entries.map(entry => entry.isDirectory() ? walk(path.join(dir, entry.name)) : path.join(dir, entry.name)))).flat();
 }
 const files = (await walk(root)).filter(file => file.endsWith('.html'));
+assert(!(await stat(path.join(root, 'README.md')).catch(() => null)), 'Local maintenance instructions must not be published');
 const documents = new Map();
 for (const file of files) {
   const html = await readFile(file, 'utf8');

@@ -2,3 +2,6 @@ dist/
 node_modules/
 .DS_Store
 Thumbs.db
+
+# Personal maintenance instructions stay on this computer.
+/README.md
