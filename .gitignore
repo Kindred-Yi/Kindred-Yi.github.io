@@ -5,3 +5,6 @@ Thumbs.db
 
 # Personal maintenance instructions stay on this computer.
 /README.md
+
+# Local tool permissions contain absolute paths from this machine.
+/.claude/settings.local.json

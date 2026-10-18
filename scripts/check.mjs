@@ -55,6 +55,12 @@ assert(person.sameAs.every(url => url.startsWith('https://')), 'sameAs profiles 
 assert(!/[<>]/.test(schemaMatch[1]), 'Structured data must not contain raw angle brackets');
 const robots = await readFile(path.join(root, 'robots.txt'), 'utf8');
 assert(!/^\s*Disallow:\s*\/\s*$/mi.test(robots), 'robots.txt blocks the whole site');
+// A Disallow for a path that does not exist is a typo that silently does nothing.
+const sitemap = await readFile(path.join(root, 'sitemap.xml'), 'utf8');
+for (const [, blocked] of robots.matchAll(/^Disallow:\s*(\S+)$/gm)) {
+  assert(await stat(path.join(root, blocked)).catch(() => null), `robots.txt blocks a path that does not exist: ${blocked}`);
+  assert(!sitemap.includes(blocked), `${blocked} is both blocked and advertised in the sitemap`);
+}
 for (const [file, { html }] of documents) {
   assert(!/name="robots"[^>]*noindex/i.test(html), `Page is set to noindex: ${file}`);
 }

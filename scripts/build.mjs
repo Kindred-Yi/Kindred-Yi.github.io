@@ -126,7 +126,14 @@ for (const [filename, html] of pages) {
 }
 await Promise.all(['assets', 'images'].map(dir => cp(path.join(root, dir), path.join(output, dir), { recursive: true })));
 await writeFile(path.join(output, '.nojekyll'), '');
-await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${profile.siteUrl}/sitemap.xml\n`);
+// Files listed in noindexPaths stay downloadable but are kept out of search
+// results. GitHub Pages cannot send an X-Robots-Tag header and a PDF has no
+// <head> to put a meta tag in, so robots.txt is the only lever available.
+const disallow = (profile.noindexPaths ?? []).map(entry => {
+  if (!entry.startsWith('/')) throw new Error(`noindexPaths must be root-relative: ${entry}`);
+  return `Disallow: ${entry}`;
+}).join('\n');
+await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\n${disallow}${disallow ? '\n' : ''}Sitemap: ${profile.siteUrl}/sitemap.xml\n`);
 // lastmod tells a crawler which pages are worth re-fetching. Posts carry their
 // own date; the home and index pages change whenever the site is rebuilt.
 const buildDate = new Date().toISOString().slice(0, 10);

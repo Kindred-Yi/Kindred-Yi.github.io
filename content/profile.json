@@ -18,6 +18,11 @@
   ],
   "googleSiteVerification": "",
 
+  "noindexPaths": [
+    "/assets/Kindred_CV.pdf",
+    "/assets/CV.pdf"
+  ],
+
   "links": {
     "cv": "/assets/Kindred_CV.pdf",
     "scholar": "https://scholar.google.com/citations?user=5zqN3c8AAAAJ&hl=en",
