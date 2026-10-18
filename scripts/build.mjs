@@ -126,6 +126,13 @@ for (const [filename, html] of pages) {
 }
 await Promise.all(['assets', 'images'].map(dir => cp(path.join(root, dir), path.join(output, dir), { recursive: true })));
 await writeFile(path.join(output, '.nojekyll'), '');
+// IndexNow lets Bing, Yandex and the engines built on them (DuckDuckGo,
+// Ecosia) be told about a change without an account. Ownership is proven by
+// serving the key back at the site root, so the key is public by design.
+if (profile.indexNowKey) {
+  if (!/^[a-f0-9]{16,128}$/.test(profile.indexNowKey)) throw new Error('indexNowKey must be 16-128 lowercase hex characters');
+  await writeFile(path.join(output, `${profile.indexNowKey}.txt`), profile.indexNowKey);
+}
 // Files listed in noindexPaths stay downloadable but are kept out of search
 // results. GitHub Pages cannot send an X-Robots-Tag header and a PDF has no
 // <head> to put a meta tag in, so robots.txt is the only lever available.
