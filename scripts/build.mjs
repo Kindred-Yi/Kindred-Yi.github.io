@@ -93,7 +93,7 @@ const homeContent = template(home, {
 });
 
 // Prepare all pages before replacing the previous build: a bad post preserves it.
-const pages = new Map([['index.html', page({ title: `${profile.name} · ${profile.affiliation}`, pathname: '/', content: homeContent, section: 'home' })]]);
+const pages = new Map([['index.html', page({ title: profile.name, pathname: '/', content: homeContent, section: 'home' })]]);
 pages.set('resume/index.html', page({
   title: `Curriculum vitae · ${profile.name}`, pathname: '/resume/', indexable: false,
   content: template(cvTemplate, { name: escape(profile.name), pdfData: cvPdf.toString('base64') })
