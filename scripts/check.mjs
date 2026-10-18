@@ -62,8 +62,18 @@ for (const [, blocked] of robots.matchAll(/^Disallow:\s*(\S+)$/gm)) {
   assert(!sitemap.includes(blocked), `${blocked} is both blocked and advertised in the sitemap`);
 }
 for (const [file, { html }] of documents) {
-  assert(!/name="robots"[^>]*noindex/i.test(html), `Page is set to noindex: ${file}`);
+  const noindex = /name="robots"[^>]*noindex/i.test(html);
+  assert.equal(noindex, ['cv/index.html', 'resume/index.html'].some(name => file === path.join(root, name)), `Unexpected indexing rule: ${file}`);
 }
+const cvHtml = documents.get(path.join(root, 'resume/index.html')).html;
+assert(documents.get(path.join(root, 'cv/index.html')).html.includes('content="0;url=/"'), 'Legacy CV search results must lead to the homepage');
+const pdfMatch = cvHtml.match(/<script id="cv-document" type="application\/octet-stream">([A-Za-z0-9+/=]+)<\/script>/);
+assert(pdfMatch, 'CV document missing from its noindex page');
+const pdfBytes = Buffer.from(pdfMatch[1], 'base64');
+assert(pdfBytes.subarray(0, 5).equals(Buffer.from('%PDF-')), 'CV content is not a PDF');
+assert(pdfBytes.equals(await readFile(new URL('../assets/Kindred_CV.pdf', import.meta.url))), 'CV download differs from the source document');
+assert(!(await walk(root)).some(file => file.toLowerCase().endsWith('.pdf')), 'Standalone PDF leaked into the published site');
+for (const pathname of ['/cv/', '/resume/']) assert(!sitemap.includes(`<loc>https://kindred-yi.github.io${pathname}</loc>`), 'CV pages must stay out of the sitemap');
 assert(!home.includes('Paper Title Number'), 'Sample publications survived');
 assert(!home.includes('is-pending'), 'A social link is still missing');
 

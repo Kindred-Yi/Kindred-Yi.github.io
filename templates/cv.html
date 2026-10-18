@@ -1,0 +1,11 @@
+<section class="cv-page" aria-labelledby="cv-title">
+  <div class="cv-heading">
+    <h1 id="cv-title">Curriculum vitae</h1>
+    <a id="cv-download" class="text-link" download="Kindred_CV.pdf" hidden>Download PDF ↓</a>
+  </div>
+  <p id="cv-status" role="status">Loading CV…</p>
+  <noscript><p>Please enable JavaScript to view and download the CV.</p></noscript>
+  <iframe id="cv-viewer" class="cv-viewer" title="Curriculum vitae of {{name}}" hidden></iframe>
+  <script id="cv-document" type="application/octet-stream">{{pdfData}}</script>
+  <script src="/assets/cv.js" defer></script>
+</section>

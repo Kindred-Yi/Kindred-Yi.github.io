@@ -19,13 +19,8 @@
   "googleSiteVerification": "4sK9AC1hAvRyg1lceKetPZLPkXvGDcIW319pgf29YJI",
   "indexNowKey": "3fcb647dbb005e02788d07fe7d579ec2",
 
-  "noindexPaths": [
-    "/assets/Kindred_CV.pdf",
-    "/assets/CV.pdf"
-  ],
-
   "links": {
-    "cv": "/assets/Kindred_CV.pdf",
+    "cv": "/resume/",
     "scholar": "https://scholar.google.com/citations?user=5zqN3c8AAAAJ&hl=en",
     "linkedin": "https://www.linkedin.com/in/yongzhe-kindred-yi-46009a288/",
     "email": "mailto:yyi49@wisc.edu",

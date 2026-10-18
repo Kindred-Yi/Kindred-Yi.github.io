@@ -6,12 +6,13 @@ const root = fileURLToPath(new URL('../', import.meta.url));
 const output = path.join(root, 'dist');
 const read = name => readFile(path.join(root, name), 'utf8');
 const json = async name => JSON.parse(await read(`content/${name}.json`));
-const [profile, publications, posts, layout, home, about] = await Promise.all([
+const [profile, publications, posts, layout, home, about, cvTemplate, cvPdf] = await Promise.all([
   json('profile'), json('publications'), json('posts'),
   read('templates/layout.html'), read('templates/home.html'),
   // Prose with inline links lives in content/*.html, same as blog post bodies,
   // because a JSON string cannot be wrapped across lines.
-  read('content/about.html')
+  read('content/about.html'), read('templates/cv.html'),
+  readFile(path.join(root, 'assets/Kindred_CV.pdf'))
 ]);
 const escape = value => String(value).replace(/[&<>"']/g, char => ({
   '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
@@ -77,12 +78,13 @@ const verificationToken = profile.googleSiteVerification?.trim();
 if (verificationToken && !/^[\w-]+$/.test(verificationToken)) throw new Error('googleSiteVerification must be the bare token from Search Console');
 const siteVerification = verificationToken ? `\n  <meta name="google-site-verification" content="${escape(verificationToken)}">` : '';
 
-const page = ({ title, description = profile.description, pathname, content, section, article = false }) => template(layout, {
+const page = ({ title, description = profile.description, pathname, content, section, article = false, indexable = true }) => template(layout, {
   title: escape(title), description: escape(description),
   canonical: escape(new URL(pathname, profile.siteUrl).href), imageUrl: escape(new URL(profile.photo, profile.siteUrl).href),
   name: escape(profile.name), year: new Date().getUTCFullYear(),
   ogType: article ? 'article' : 'website', aboutCurrent: section === 'home' ? ' aria-current="page"' : '',
   blogCurrent: section === 'blog' ? ' aria-current="page"' : '',
+  robots: indexable ? 'index, follow, max-image-preview:large' : 'noindex, follow',
   siteVerification, structuredData: section === 'home' ? structuredData : '', content
 });
 const homeContent = template(home, {
@@ -92,6 +94,10 @@ const homeContent = template(home, {
 
 // Prepare all pages before replacing the previous build: a bad post preserves it.
 const pages = new Map([['index.html', page({ title: `${profile.name} · ${profile.affiliation}`, pathname: '/', content: homeContent, section: 'home' })]]);
+pages.set('resume/index.html', page({
+  title: `Curriculum vitae · ${profile.name}`, pathname: '/resume/', indexable: false,
+  content: template(cvTemplate, { name: escape(profile.name), pdfData: cvPdf.toString('base64') })
+}));
 const published = posts.filter(post => !post.draft);
 const slugs = new Set();
 const formatDate = date => new Intl.DateTimeFormat('en', { dateStyle: 'long', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
@@ -108,8 +114,9 @@ published.sort((a, b) => b.date.localeCompare(a.date));
 const postList = published.length ? published.map(post => `<article class="post-item"><time datetime="${post.date}">${formatDate(post.date)}</time><h2><a href="/blog/${post.slug}/">${escape(post.title)}</a></h2><p>${escape(post.description)}</p><a class="text-link" href="/blog/${post.slug}/">Read post ↗</a></article>`).join('\n') : '<div class="empty-state"><h2>Writing is on its way.</h2><p>A space for research notes, ideas, and things I learn along the way. No posts yet — check back soon.</p></div>';
 pages.set('blog/index.html', page({ title: `Blog · ${profile.name}`, pathname: '/blog/', section: 'blog', content: `<div class="writing-page"><p class="eyebrow">Notes &amp; perspectives</p><h1 class="page-title">Blog</h1><p class="page-description">Thoughts on robots, learning, and the people at the center of it all.</p>${postList}<a class="text-link" href="/">← Back to home</a></div>` }));
 pages.set('404.html', page({ title: `Page not found · ${profile.name}`, pathname: '/404.html', content: '<div class="writing-page"><p class="eyebrow">404</p><h1 class="page-title">A little off course.</h1><p class="page-description">This page may have moved, or the link may be out of date.</p><a class="text-link" href="/">← Back to home</a></div>' }));
-for (const [oldPath, destination] of [['publications/index.html', '/#research'], ['about/index.html', '/#about']]) {
-  pages.set(oldPath, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page moved</title><meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${profile.siteUrl}${destination}"></head><body><p><a href="${destination}">Continue to ${profile.name}’s home page</a></p></body></html>`);
+for (const [oldPath, destination] of [['publications/index.html', '/#research'], ['about/index.html', '/#about'], ['cv/index.html', '/']]) {
+  const indexing = oldPath === 'cv/index.html' ? '<meta name="robots" content="noindex, follow">' : '';
+  pages.set(oldPath, `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Page moved</title>${indexing}<meta http-equiv="refresh" content="0;url=${destination}"><link rel="canonical" href="${profile.siteUrl}${destination}"></head><body><p><a href="${destination}">Continue to ${profile.name}’s home page</a></p></body></html>`);
 }
 // The output is a fixed child of the checkout. Source data stays intact.
 if (path.dirname(output) !== path.resolve(root) || path.basename(output) !== 'dist') throw new Error('Unsafe build output');
@@ -124,7 +131,10 @@ for (const [filename, html] of pages) {
   await mkdir(path.dirname(target), { recursive: true });
   await writeFile(target, stripComments(html));
 }
-await Promise.all(['assets', 'images'].map(dir => cp(path.join(root, dir), path.join(output, dir), { recursive: true })));
+// The CV is embedded in its noindex HTML page; retired standalone PDFs return 404.
+await Promise.all(['assets', 'images'].map(dir => cp(path.join(root, dir), path.join(output, dir), {
+  recursive: true, filter: source => !source.toLowerCase().endsWith('.pdf')
+})));
 await writeFile(path.join(output, '.nojekyll'), '');
 // IndexNow lets Bing, Yandex and the engines built on them (DuckDuckGo,
 // Ecosia) be told about a change without an account. Ownership is proven by
@@ -133,14 +143,8 @@ if (profile.indexNowKey) {
   if (!/^[a-f0-9]{16,128}$/.test(profile.indexNowKey)) throw new Error('indexNowKey must be 16-128 lowercase hex characters');
   await writeFile(path.join(output, `${profile.indexNowKey}.txt`), profile.indexNowKey);
 }
-// Files listed in noindexPaths stay downloadable but are kept out of search
-// results. GitHub Pages cannot send an X-Robots-Tag header and a PDF has no
-// <head> to put a meta tag in, so robots.txt is the only lever available.
-const disallow = (profile.noindexPaths ?? []).map(entry => {
-  if (!entry.startsWith('/')) throw new Error(`noindexPaths must be root-relative: ${entry}`);
-  return `Disallow: ${entry}`;
-}).join('\n');
-await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\n${disallow}${disallow ? '\n' : ''}Sitemap: ${profile.siteUrl}/sitemap.xml\n`);
+// Crawlers must see /resume/'s noindex, /cv/'s redirect and the old PDFs' 404s.
+await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${profile.siteUrl}/sitemap.xml\n`);
 // lastmod tells a crawler which pages are worth re-fetching. Posts carry their
 // own date; the home and index pages change whenever the site is rebuilt.
 const buildDate = new Date().toISOString().slice(0, 10);
