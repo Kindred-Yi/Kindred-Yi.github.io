@@ -58,17 +58,36 @@ const publicationHtml = publications.map(paper => `<article class="publication">
     <p class="publication-summary">${escape(paper.summary)}</p>
   </div>
 </article>`).join('\n');
+// Search engines need to be told that "Kindred Yi" and "Yongzhe (Kindred) Yi"
+// are the same person, and which profiles belong to them. Only the home page
+// carries it: repeating an identity claim on every page adds nothing.
+const absolute = value => new URL(value, profile.siteUrl).href;
+const personSchema = {
+  '@context': 'https://schema.org', '@type': 'Person', '@id': `${absolute('/')}#person`,
+  name: profile.name, alternateName: profile.alternateNames, jobTitle: profile.title,
+  url: absolute('/'), image: absolute(profile.photo), description: profile.description,
+  affiliation: { '@type': 'Organization', name: profile.affiliation, url: profile.affiliationUrl },
+  alumniOf: { '@type': 'CollegeOrUniversity', name: profile.alumniOf.name, url: profile.alumniOf.url },
+  knowsAbout: profile.researchTopics,
+  sameAs: ['scholar', 'linkedin', 'github', 'twitter'].map(key => profile.links[key]).filter(Boolean)
+};
+// `<` cannot appear raw inside a script element without ending it early.
+const structuredData = `\n  <script type="application/ld+json">${JSON.stringify(personSchema).replaceAll('<', '\\u003c')}</script>`;
+const verificationToken = profile.googleSiteVerification?.trim();
+if (verificationToken && !/^[\w-]+$/.test(verificationToken)) throw new Error('googleSiteVerification must be the bare token from Search Console');
+const siteVerification = verificationToken ? `\n  <meta name="google-site-verification" content="${escape(verificationToken)}">` : '';
+
 const page = ({ title, description = profile.description, pathname, content, section, article = false }) => template(layout, {
   title: escape(title), description: escape(description),
   canonical: escape(new URL(pathname, profile.siteUrl).href), imageUrl: escape(new URL(profile.photo, profile.siteUrl).href),
   name: escape(profile.name), year: new Date().getUTCFullYear(),
   ogType: article ? 'article' : 'website', aboutCurrent: section === 'home' ? ' aria-current="page"' : '',
-  blogCurrent: section === 'blog' ? ' aria-current="page"' : '', content
+  blogCurrent: section === 'blog' ? ' aria-current="page"' : '',
+  siteVerification, structuredData: section === 'home' ? structuredData : '', content
 });
 const homeContent = template(home, {
   name: escape(profile.name), role: escape(profile.title), affiliation: escape(profile.affiliation), affiliationUrl: safeUrl(profile.affiliationUrl),
-  photo: safeUrl(profile.photo), about, socialLinks, publications: publicationHtml,
-  email: safeUrl(profile.links.email), emailText: escape(profile.links.email.replace(/^mailto:/, ''))
+  photo: safeUrl(profile.photo), about, socialLinks, publications: publicationHtml
 });
 
 // Prepare all pages before replacing the previous build: a bad post preserves it.
@@ -108,6 +127,9 @@ for (const [filename, html] of pages) {
 await Promise.all(['assets', 'images'].map(dir => cp(path.join(root, dir), path.join(output, dir), { recursive: true })));
 await writeFile(path.join(output, '.nojekyll'), '');
 await writeFile(path.join(output, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${profile.siteUrl}/sitemap.xml\n`);
-const urls = ['/', '/blog/', ...published.map(post => `/blog/${post.slug}/`)];
-await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(url => `<url><loc>${escape(profile.siteUrl + url)}</loc></url>`).join('')}</urlset>\n`);
+// lastmod tells a crawler which pages are worth re-fetching. Posts carry their
+// own date; the home and index pages change whenever the site is rebuilt.
+const buildDate = new Date().toISOString().slice(0, 10);
+const urls = [['/', buildDate], ['/blog/', buildDate], ...published.map(post => [`/blog/${post.slug}/`, post.date])];
+await writeFile(path.join(output, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${urls.map(([url, lastmod]) => `<url><loc>${escape(profile.siteUrl + url)}</loc><lastmod>${lastmod}</lastmod></url>`).join('')}</urlset>\n`);
 console.log(`Built ${pages.size} pages in dist/ (${published.length} blog posts).`);

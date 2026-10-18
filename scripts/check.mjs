@@ -42,6 +42,22 @@ for (const [file, { html }] of documents) {
 }
 const home = documents.get(path.join(root, 'index.html')).html;
 assert(home.includes('id="about"') && home.includes('id="research"'), 'Missing home sections');
+
+// Broken structured data is invisible on the page but silently costs indexing.
+const schemaMatch = home.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/);
+assert(schemaMatch, 'Home page lost its Person structured data');
+const person = JSON.parse(schemaMatch[1]);
+assert.equal(person['@type'], 'Person');
+for (const field of ['name', 'url', 'image', 'sameAs', 'alternateName']) {
+  assert(person[field]?.length, `Structured data is missing ${field}`);
+}
+assert(person.sameAs.every(url => url.startsWith('https://')), 'sameAs profiles must be absolute HTTPS URLs');
+assert(!/[<>]/.test(schemaMatch[1]), 'Structured data must not contain raw angle brackets');
+const robots = await readFile(path.join(root, 'robots.txt'), 'utf8');
+assert(!/^\s*Disallow:\s*\/\s*$/mi.test(robots), 'robots.txt blocks the whole site');
+for (const [file, { html }] of documents) {
+  assert(!/name="robots"[^>]*noindex/i.test(html), `Page is set to noindex: ${file}`);
+}
 assert(!home.includes('Paper Title Number'), 'Sample publications survived');
 assert(!home.includes('is-pending'), 'A social link is still missing');
 

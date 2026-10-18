@@ -6,6 +6,18 @@
   "photo": "/images/yyzava.png",
   "siteUrl": "https://kindred-yi.github.io",
   "description": "Yongzhe (Kindred) Yi — human–robot interaction and robot learning at MIT CSAIL.",
+
+  "alternateNames": ["Kindred Yi", "Yongzhe Yi"],
+  "alumniOf": { "name": "University of Wisconsin–Madison", "url": "https://www.wisc.edu/" },
+  "researchTopics": [
+    "Human–robot interaction",
+    "Robot learning",
+    "Dexterous teleoperation",
+    "Shared control",
+    "Vision-language-action models"
+  ],
+  "googleSiteVerification": "",
+
   "links": {
     "cv": "/assets/Kindred_CV.pdf",
     "scholar": "https://scholar.google.com/citations?user=5zqN3c8AAAAJ&hl=en",
